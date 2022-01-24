@@ -61,6 +61,7 @@ def main():
 
     webcam = VideoCamera()
     frame = webcam.get_frame()
+    print(frame.shape)
     result, frame_result = detect_face(frame)
 
     return result, frame_result
@@ -85,15 +86,6 @@ def show_image():
 
     data = cv2.imencode('.png', frame_result)[1].tobytes()
     return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n', mimetype='multipart/x-mixed-replace; boundary=frame')
-
-def main():
-
-    webcam = VideoCamera()
-    frame = webcam.get_frame()
-    print(frame.shape)
-    result, frame_result = detect_face(frame)
-
-    return result, frame_result
 
 if __name__ == '__main__':
 
