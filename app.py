@@ -61,7 +61,13 @@ def main():
 
     # webcam = VideoCamera()
     # frame = webcam.get_frame()
-    frame = cv2.imread('obama.jpg')
+
+    camera = cv2.VideoCapture(0)
+    success, frame = camera.read()
+
+    if not success:
+        frame = cv2.imread('obama.jpg')
+
     print(frame.shape)
     result, frame_result = detect_face(frame)
 
