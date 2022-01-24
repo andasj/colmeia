@@ -90,6 +90,7 @@ def main():
 
     webcam = VideoCamera()
     frame = webcam.get_frame()
+    print(frame.shape)
     result, frame_result = detect_face(frame)
 
     return result, frame_result
