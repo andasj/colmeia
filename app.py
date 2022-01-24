@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, Response
 import cv2
+import os
 
 class VideoCamera(object):
     def __init__(self):
@@ -94,5 +95,6 @@ def main():
     return result, frame_result
 
 if __name__ == '__main__':
-    # app.run(host='0.0.0.0', port=81)
-    app.run()
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
