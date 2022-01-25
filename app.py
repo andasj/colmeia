@@ -57,7 +57,7 @@ def detect_face(image):
     image = cv2.putText(image, 'Face frontal not detected!!!', (35, 35), cv2.FONT_ITALIC, 1, (0, 0, 255), 5, cv2.LINE_AA)
     return False, image
 
-def main():
+def main_success():
 
     # webcam = VideoCamera()
     # frame = webcam.get_frame()
@@ -66,7 +66,23 @@ def main():
     success, frame = camera.read()
 
     if not success:
-        frame = cv2.imread('obama.jpg')
+        frame = cv2.imread('image_failed.jpg')
+
+    print(frame.shape)
+    result, frame_result = detect_face(frame)
+
+    return result, frame_result
+
+def main_failed():
+
+    # webcam = VideoCamera()
+    # frame = webcam.get_frame()
+
+    camera = cv2.VideoCapture(0)
+    success, frame = camera.read()
+
+    if not success:
+        frame = cv2.imread('image_failed.jpg')
 
     print(frame.shape)
     result, frame_result = detect_face(frame)
@@ -79,17 +95,18 @@ app = Flask(__name__)
 def index():
     return 'Desafio Colmeia!!!!'
 
-@app.route('/json')
+@app.route('/json_failed')
 def initial_test():
 
-    result, frame_result = main()
+    result, frame_result = main_success()
+    shape_image = frame_result.shape
 
-    return jsonify({'Face detect': result})
+    return jsonify({'Face detect': result, 'Shape image': shape_image})
 
-@app.route('/image')
+@app.route('/image_failed')
 def show_image():
 
-    result, frame_result = main()
+    result, frame_result = main_failed()
 
     data = cv2.imencode('.png', frame_result)[1].tobytes()
     return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n', mimetype='multipart/x-mixed-replace; boundary=frame')
