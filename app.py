@@ -57,32 +57,20 @@ def detect_face(image):
     image = cv2.putText(image, 'Face frontal not detected!!!', (35, 35), cv2.FONT_ITALIC, 1, (0, 0, 255), 5, cv2.LINE_AA)
     return False, image
 
-def main_success():
+def main(success):
 
     # webcam = VideoCamera()
     # frame = webcam.get_frame()
 
     camera = cv2.VideoCapture(0)
-    success, frame = camera.read()
+    success_frame, frame = camera.read()
 
-    if not success:
-        frame = cv2.imread('image_failed.jpg')
+    if not success_frame:
+        if success:
+            frame = cv2.imread('image_success.jpg')
 
-    print(frame.shape)
-    result, frame_result = detect_face(frame)
-
-    return result, frame_result
-
-def main_failed():
-
-    # webcam = VideoCamera()
-    # frame = webcam.get_frame()
-
-    camera = cv2.VideoCapture(0)
-    success, frame = camera.read()
-
-    if not success:
-        frame = cv2.imread('image_failed.jpg')
+        else:
+            frame = cv2.imread('image_failed.jpg')
 
     print(frame.shape)
     result, frame_result = detect_face(frame)
@@ -98,7 +86,9 @@ def index():
 @app.route('/json_failed')
 def initial_test():
 
-    result, frame_result = main_success()
+    success = False
+    result, frame_result = main(success)
+
     shape_image = frame_result.shape
 
     return jsonify({'Face detect': result, 'Shape image': shape_image})
@@ -106,10 +96,28 @@ def initial_test():
 @app.route('/image_failed')
 def show_image():
 
-    result, frame_result = main_failed()
-
+    success = False
+    result, frame_result = main(success)
     data = cv2.imencode('.png', frame_result)[1].tobytes()
     return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n', mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/json_success')
+def initial_test():
+    success = True
+    result, frame_result = main(success)
+    shape_image = frame_result.shape
+
+    return jsonify({'Face detect': result, 'Shape image': shape_image})
+
+
+@app.route('/image_success')
+def show_image():
+    success = True
+    result, frame_result = main(success)
+    data = cv2.imencode('.png', frame_result)[1].tobytes()
+    return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n',
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
 
