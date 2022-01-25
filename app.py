@@ -70,7 +70,7 @@ def main(success):
             frame = cv2.imread('image_success.jpg')
 
         else:
-            frame = cv2.imread('image_failed.jpg')
+            frame = cv2.imread('image_not_success.jpg')
 
     print(frame.shape)
     result, frame_result = detect_face(frame)
