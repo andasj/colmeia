@@ -84,7 +84,7 @@ def index():
     return 'Desafio Colmeia!!!!'
 
 @app.route('/json_failed')
-def initial_test():
+def initial_test_failed():
 
     success = False
     result, frame_result = main(success)
@@ -94,7 +94,7 @@ def initial_test():
     return jsonify({'Face detect': result, 'Shape image': shape_image})
 
 @app.route('/image_failed')
-def show_image():
+def show_image_failed():
 
     success = False
     result, frame_result = main(success)
@@ -103,7 +103,7 @@ def show_image():
 
 
 @app.route('/json_success')
-def initial_test():
+def initial_test_success():
     success = True
     result, frame_result = main(success)
     shape_image = frame_result.shape
@@ -112,7 +112,7 @@ def initial_test():
 
 
 @app.route('/image_success')
-def show_image():
+def show_image_success():
     success = True
     result, frame_result = main(success)
     data = cv2.imencode('.png', frame_result)[1].tobytes()
