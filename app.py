@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, Response
 import cv2
 import os
+from flask import Flask, flash, request, redirect, url_for, send_from_directory
 
 def choice_face(image, faces_detectadas):
 
