@@ -66,6 +66,7 @@ def main():
     return result, frame_result
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def index():
