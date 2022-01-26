@@ -2,18 +2,6 @@ from flask import Flask, jsonify, Response
 import cv2
 import os
 
-class VideoCamera(object):
-    def __init__(self):
-        self.video = cv2.VideoCapture(0)  # Iniciar a captcao
-
-    def __del__(self):
-        self.video.release()  # Liberar a webCam
-
-    def get_frame(self):
-        ret, frame = self.video.read()
-        # frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor, interpolation=cv2.INTER_AREA)
-        return frame
-
 def choice_face(image, faces_detectadas):
 
     # Inicializa as variaveis
@@ -57,22 +45,18 @@ def detect_face(image):
     image = cv2.putText(image, 'Face frontal not detected!!!', (35, 35), cv2.FONT_ITALIC, 1, (0, 0, 255), 5, cv2.LINE_AA)
     return False, image
 
-def main(success):
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    # webcam = VideoCamera()
-    # frame = webcam.get_frame()
+def main():
 
     camera = cv2.VideoCapture(0)
     success_frame, frame = camera.read()
 
     if not success_frame:
-        if success:
-            frame = cv2.imread('image_success.jpg')
+        frame = cv2.imread('upload/image.jpg')
 
-        else:
-            frame = cv2.imread('image_not_success.jpg')
-
-    print(frame.shape)
     result, frame_result = detect_face(frame)
 
     return result, frame_result
@@ -83,41 +67,54 @@ app = Flask(__name__)
 def index():
     return 'Desafio Colmeia!!!!'
 
-@app.route('/json_failed')
-def initial_test_failed():
+@app.route('/json')
+def show_json():
 
-    success = False
-    result, frame_result = main(success)
-
+    result, frame_result = main()
     shape_image = frame_result.shape
 
     return jsonify({'Face detect': result, 'Shape image': shape_image})
 
-@app.route('/image_failed')
-def show_image_failed():
+@app.route('/image')
+def show_image():
 
-    success = False
-    result, frame_result = main(success)
+    result, frame_result = main()
     data = cv2.imencode('.png', frame_result)[1].tobytes()
     return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n', mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit an empty part without filename
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
 
-@app.route('/json_success')
-def initial_test_success():
-    success = True
-    result, frame_result = main(success)
-    shape_image = frame_result.shape
-
-    return jsonify({'Face detect': result, 'Shape image': shape_image})
-
-
-@app.route('/image_success')
-def show_image_success():
-    success = True
-    result, frame_result = main(success)
-    data = cv2.imencode('.png', frame_result)[1].tobytes()
-    return Response(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + data + b'\r\n\r\n',
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+        filename = 'image.jpg'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # if file and allowed_file(file.filename):
+        #     filename = secure_filename(file.filename)
+        #     filename = 'image.jpg'
+        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #     print(file)
+        #     print(filename)
+        #     print(os.path.join(app.config['UPLOAD_FOLDER']))
+        #     # return redirect(url_for('uploaded_file', filename=filename))
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
 
 if __name__ == '__main__':
 
