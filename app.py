@@ -3,6 +3,9 @@ import cv2
 import os
 from flask import Flask, flash, request, redirect, url_for, send_from_directory
 
+UPLOAD_FOLDER = 'upload'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
 def choice_face(image, faces_detectadas):
 
     # Inicializa as variaveis
