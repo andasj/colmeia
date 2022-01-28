@@ -55,9 +55,6 @@ def allowed_file(filename):
 
 def main():
 
-    camera = cv2.VideoCapture(0)
-    success_frame, frame = camera.read()
-
     if not success_frame:
         frame = cv2.imread('upload/image.jpg')
 
@@ -77,7 +74,6 @@ def show_json():
 
     result, frame_result = main()
     shape_image = frame_result.shape
-
     return jsonify({'Face detect': result, 'Shape image': shape_image})
 
 @app.route('/image')
@@ -103,14 +99,6 @@ def upload_file():
 
         filename = 'image.jpg'
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # if file and allowed_file(file.filename):
-        #     filename = secure_filename(file.filename)
-        #     filename = 'image.jpg'
-        #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        #     print(file)
-        #     print(filename)
-        #     print(os.path.join(app.config['UPLOAD_FOLDER']))
-        #     # return redirect(url_for('uploaded_file', filename=filename))
     return '''
     <!doctype html>
     <title>Upload new File</title>
