@@ -55,8 +55,7 @@ def allowed_file(filename):
 
 def main():
 
-    if not success_frame:
-        frame = cv2.imread('upload/image.jpg')
+    frame = cv2.imread('upload/image.jpg')
 
     result, frame_result = detect_face(frame)
 
